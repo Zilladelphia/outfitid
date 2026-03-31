@@ -61,9 +61,31 @@ export default function AdminPage() {
       body: JSON.stringify({ image }),
     })
     const data = await res.json()
-    setResult(data)
-    setLoading(false)
+
+const itemsWithImages = await Promise.all(
+  data.items.map(async (item: any) => {
+    const productsWithImages = await Promise.all(
+      item.products.map(async (product: any) => {
+        if (!product.image_url && product.product_url) {
+          const imgRes = await fetch('/api/get-product-image', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url: product.product_url }),
+          })
+          const imgData = await imgRes.json()
+          return { ...product, image_url: imgData.image }
+        }
+        return product
+      })
+    )
+    return { ...item, products: productsWithImages }
+  })
+)
+setResult({ ...data, items: itemsWithImages })
+setLoading(false)
   }
+
+
 
   const handleConfirmAndSave = async (item: any, product: any, index: number) => {
     const ok = confirm(
@@ -290,7 +312,9 @@ export default function AdminPage() {
                   const isSaved = savedProducts.includes(productIndex)
                   return (
                     <div key={j} className={`bg-zinc-800 rounded-xl p-3 border ${isSaved ? 'border-green-500' : 'border-transparent'}`}>
-                      <img src={product.image_url} alt={product.title} className="w-full h-32 object-cover rounded-lg mb-2"/>
+                      {product.image_url && (
+                          <img src={product.image_url} alt={product.title} className="w-full h-32 object-cover rounded-lg mb-2"/>
+                        )}
                       <p className="text-white text-sm font-medium leading-tight mb-1">{product.title}</p>
                       <p className="text-purple-400 text-sm">{product.price}</p>
                       <p className="text-zinc-500 text-xs mb-3">{product.retailer}</p>

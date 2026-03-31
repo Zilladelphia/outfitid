@@ -18,7 +18,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark">
-      <body className={inter.className}>
+  <head>
+    <script 
+      src="https://s.skimresources.com/js/300821X1788693.skimlinks.js"
+      type="text/javascript"
+      async
+    />
+  </head>
+  <body className={inter.className}>
         <nav className="border-b border-zinc-800 bg-black px-4 md:px-8 py-4 flex items-center justify-between">
           <Link href="/" className="text-white font-bold text-xl tracking-tight shrink-0">
             Outfit<span className="text-purple-500">ID</span>
